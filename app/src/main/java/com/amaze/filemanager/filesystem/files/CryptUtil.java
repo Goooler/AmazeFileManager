@@ -104,6 +104,7 @@ public class CryptUtil {
 
   private ProgressHandler progressHandler;
   private ArrayList<HybridFile> failedOps;
+  private final String password;
 
   /**
    * Constructor will start encryption process serially. Make sure to call with background thread.
@@ -123,11 +124,13 @@ public class CryptUtil {
       HybridFileParcelable sourceFile,
       ProgressHandler progressHandler,
       ArrayList<HybridFile> failedOps,
-      String targetFilename)
+      String targetFilename,
+      String password)
       throws GeneralSecurityException, IOException {
 
     this.progressHandler = progressHandler;
     this.failedOps = failedOps;
+    this.password = password;
 
     // target encrypted file
     HybridFile hFile = new HybridFile(sourceFile.getMode(), sourceFile.getParent(context));
@@ -151,11 +154,13 @@ public class CryptUtil {
       HybridFileParcelable baseFile,
       String targetPath,
       ProgressHandler progressHandler,
-      ArrayList<HybridFile> failedOps)
+      ArrayList<HybridFile> failedOps,
+      String password)
       throws GeneralSecurityException, IOException {
 
     this.progressHandler = progressHandler;
     this.failedOps = failedOps;
+    this.password = password;
 
     HybridFile targetDirectory = new HybridFile(OpenMode.FILE, targetPath);
     if (!targetPath.equals(context.getExternalCacheDir())) {

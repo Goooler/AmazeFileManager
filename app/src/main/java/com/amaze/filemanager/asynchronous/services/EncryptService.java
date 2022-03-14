@@ -222,7 +222,7 @@ public class EncryptService extends AbstractProgressiveService {
 
         // we're here to encrypt
         try {
-          new CryptUtil(context, baseFile, progressHandler, failedOps, targetFilename);
+          new CryptUtil(context, baseFile, progressHandler, failedOps, targetFilename, password);
         } catch (Exception e) {
           e.printStackTrace();
           failedOps.add(baseFile);
