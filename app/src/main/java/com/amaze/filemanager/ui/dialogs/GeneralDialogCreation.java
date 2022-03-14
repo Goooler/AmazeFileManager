@@ -1003,9 +1003,7 @@ public class GeneralDialogCreation {
         ((dialog, which) -> {
           EditText editText = dialog.getView().findViewById(R.id.singleedittext_input);
 
-          if (editText.getText().toString().equals(password))
-            decryptButtonCallbackInterface.confirm(intent);
-          else decryptButtonCallbackInterface.failed();
+          decryptButtonCallbackInterface.confirm(intent);
 
           dialog.dismiss();
         }),
