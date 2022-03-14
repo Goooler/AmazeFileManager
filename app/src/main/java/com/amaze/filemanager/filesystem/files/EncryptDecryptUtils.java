@@ -64,16 +64,7 @@ public class EncryptDecryptUtils {
   public static void startEncryption(
       Context c, final String path, final String password, Intent intent)
       throws GeneralSecurityException, IOException {
-    CryptHandler cryptHandler = CryptHandler.getInstance();
-    String destPath =
-        path.substring(0, path.lastIndexOf('/') + 1)
-            .concat(intent.getStringExtra(EncryptService.TAG_ENCRYPT_TARGET));
-
-    // EncryptService.TAG_ENCRYPT_TARGET already has the .aze extension, no need to append again
-
-    EncryptedEntry encryptedEntry = new EncryptedEntry(destPath, password);
-    cryptHandler.addEntry(encryptedEntry);
-
+    intent.putExtra("password", password);
     // start the encryption process
     ServiceWatcherUtil.runService(c, intent);
   }

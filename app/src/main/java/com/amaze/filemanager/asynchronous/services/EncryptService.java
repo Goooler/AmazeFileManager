@@ -73,6 +73,7 @@ public class EncryptService extends AbstractProgressiveService {
   private long totalSize = 0l;
   private HybridFileParcelable baseFile;
   private ArrayList<HybridFile> failedOps = new ArrayList<>();
+  private String password;
   private String targetFilename;
   private int accentColor;
   private SharedPreferences sharedPreferences;
@@ -88,8 +89,8 @@ public class EncryptService extends AbstractProgressiveService {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-
     baseFile = intent.getParcelableExtra(TAG_SOURCE);
+    password = intent.getStringExtra("password");
     targetFilename = intent.getStringExtra(TAG_ENCRYPT_TARGET);
     sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     accentColor =
