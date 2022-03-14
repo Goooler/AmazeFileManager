@@ -6,11 +6,11 @@ import java.io.BufferedOutputStream
 
 object StreamCrypt {
     private const val placeholder = BuildConfig.APPLICATION_ID
+    private val buffer = ByteArray(8192)
 
     fun encrypt(
         password: String, inputStream: BufferedInputStream, outputStream: BufferedOutputStream
     ) {
-        val buffer = ByteArray(GenericCopyUtil.DEFAULT_BUFFER_SIZE)
         var count: Int
         try {
             outputStream.write((password + placeholder).toByteArray())
@@ -26,14 +26,13 @@ object StreamCrypt {
     fun decrypt(
         password: String, inputStream: BufferedInputStream, outputStream: BufferedOutputStream
     ) {
-        val result = (password + placeholder).toByteArray()
-        val byteArray = ByteArray(result.size).also {
+        val passwd = (password + placeholder).toByteArray()
+        val header = ByteArray(passwd.size).also {
             inputStream.read(it)
-        }
-        check(result.joinToString() == byteArray.joinToString()) {
+        }.joinToString()
+        check(passwd.joinToString() == header) {
             "password wrong"
         }
-        val buffer = ByteArray(GenericCopyUtil.DEFAULT_BUFFER_SIZE)
         var count: Int
         try {
             while (inputStream.read(buffer).also { count = it } != -1) {
