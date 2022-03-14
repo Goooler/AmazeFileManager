@@ -1002,7 +1002,7 @@ public class GeneralDialogCreation {
         R.string.authenticate_password,
         ((dialog, which) -> {
           EditText editText = dialog.getView().findViewById(R.id.singleedittext_input);
-
+          intent.putExtra("password", editText.getText().toString());
           decryptButtonCallbackInterface.confirm(intent);
 
           dialog.dismiss();

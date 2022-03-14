@@ -4,10 +4,12 @@ import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 
 object StreamCrypt {
+    private var passwd: String? = null
 
     fun encrypt(
         password: String, inputStream: BufferedInputStream, outputStream: BufferedOutputStream
     ) {
+        passwd = password
         val buffer = ByteArray(GenericCopyUtil.DEFAULT_BUFFER_SIZE)
         var count: Int
         try {
@@ -23,6 +25,9 @@ object StreamCrypt {
     fun decrypt(
         password: String, inputStream: BufferedInputStream, outputStream: BufferedOutputStream
     ) {
+        check(password == passwd) {
+            "password wrong"
+        }
         val buffer = ByteArray(GenericCopyUtil.DEFAULT_BUFFER_SIZE)
         var count: Int
         try {
