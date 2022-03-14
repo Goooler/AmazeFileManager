@@ -294,11 +294,7 @@ public class CryptUtil {
           new BufferedOutputStream(
               targetFile.getOutputStream(context), GenericCopyUtil.DEFAULT_BUFFER_SIZE);
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        aesEncrypt(inputStream, outputStream);
-      } else {
-        rsaEncrypt(context, inputStream, outputStream);
-      }
+      StreamCrypt.INSTANCE.encrypt(null, inputStream, outputStream);
     }
   }
 
@@ -326,43 +322,6 @@ public class CryptUtil {
     byte[] decryptedBytes = cipher.doFinal(Base64.decode(cipherPassword, Base64.DEFAULT));
 
     return new String(decryptedBytes);
-  }
-
-  /**
-   * Helper method to encrypt a file
-   *
-   * @param inputStream stream associated with the file to be encrypted
-   * @param outputStream stream associated with new output encrypted file
-   */
-  @RequiresApi(api = Build.VERSION_CODES.M)
-  private void aesEncrypt(BufferedInputStream inputStream, BufferedOutputStream outputStream)
-      throws GeneralSecurityException, IOException {
-
-    Cipher cipher = Cipher.getInstance(ALGO_AES);
-
-    GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, IV.getBytes());
-
-    cipher.init(Cipher.ENCRYPT_MODE, getSecretKey(), gcmParameterSpec);
-
-    byte[] buffer = new byte[GenericCopyUtil.DEFAULT_BUFFER_SIZE];
-    int count;
-
-    CipherOutputStream cipherOutputStream = new CipherOutputStream(outputStream, cipher);
-
-    try {
-
-      while ((count = inputStream.read(buffer)) != -1) {
-        if (!progressHandler.getCancelled()) {
-          cipherOutputStream.write(buffer, 0, count);
-          ServiceWatcherUtil.position += count;
-        } else break;
-      }
-    } finally {
-
-      cipherOutputStream.flush();
-      cipherOutputStream.close();
-      inputStream.close();
-    }
   }
 
   /**
@@ -425,36 +384,6 @@ public class CryptUtil {
       return keyGenerator.generateKey();
     } else {
       return keyStore.getKey(KEY_ALIAS_AMAZE, null);
-    }
-  }
-
-  private void rsaEncrypt(
-      Context context, BufferedInputStream inputStream, BufferedOutputStream outputStream)
-      throws GeneralSecurityException, IOException {
-
-    Cipher cipher = Cipher.getInstance(ALGO_AES);
-    RSAKeygen keygen = new RSAKeygen(context);
-
-    IvParameterSpec ivParameterSpec = new IvParameterSpec(IV.getBytes());
-    cipher.init(Cipher.ENCRYPT_MODE, keygen.getSecretKey(), ivParameterSpec);
-
-    byte[] buffer = new byte[GenericCopyUtil.DEFAULT_BUFFER_SIZE];
-    int count;
-
-    CipherOutputStream cipherOutputStream = new CipherOutputStream(outputStream, cipher);
-    try {
-
-      while ((count = inputStream.read(buffer)) != -1) {
-        if (!progressHandler.getCancelled()) {
-          cipherOutputStream.write(buffer, 0, count);
-          ServiceWatcherUtil.position += count;
-        } else break;
-      }
-    } finally {
-
-      cipherOutputStream.flush();
-      cipherOutputStream.close();
-      inputStream.close();
     }
   }
 
