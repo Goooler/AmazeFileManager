@@ -223,7 +223,7 @@ public class CryptUtil {
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         aesDecrypt(inputStream, outputStream);
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      } else {
         rsaDecrypt(context, inputStream, outputStream);
       }
     }
@@ -291,7 +291,7 @@ public class CryptUtil {
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         aesEncrypt(inputStream, outputStream);
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      } else {
         rsaEncrypt(context, inputStream, outputStream);
       }
     }
@@ -423,7 +423,6 @@ public class CryptUtil {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
   private void rsaEncrypt(
       Context context, BufferedInputStream inputStream, BufferedOutputStream outputStream)
       throws GeneralSecurityException, IOException {
@@ -454,7 +453,6 @@ public class CryptUtil {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
   private void rsaDecrypt(
       Context context, BufferedInputStream inputStream, BufferedOutputStream outputStream)
       throws GeneralSecurityException, IOException {
@@ -485,7 +483,6 @@ public class CryptUtil {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
   private static String rsaEncryptPassword(Context context, String password)
       throws GeneralSecurityException, IOException {
 
@@ -498,7 +495,6 @@ public class CryptUtil {
     return Base64.encodeToString(cipher.doFinal(password.getBytes()), Base64.DEFAULT);
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
   private static String rsaDecryptPassword(Context context, String cipherText)
       throws GeneralSecurityException, IOException {
 
@@ -516,10 +512,9 @@ public class CryptUtil {
       throws GeneralSecurityException, IOException {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       return aesEncryptPassword(plainText);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-
+    } else {
       return rsaEncryptPassword(context, plainText);
-    } else return plainText;
+    }
   }
 
   /** Method handles decryption of cipher text on various APIs */
@@ -527,9 +522,9 @@ public class CryptUtil {
       throws GeneralSecurityException, IOException {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       return aesDecryptPassword(cipherText);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    } else {
       return rsaDecryptPassword(context, cipherText);
-    } else return cipherText;
+    }
   }
 
   /**
@@ -543,10 +538,9 @@ public class CryptUtil {
       cipher = Cipher.getInstance(ALGO_AES);
       GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, IV.getBytes());
       cipher.init(Cipher.ENCRYPT_MODE, getSecretKey(), gcmParameterSpec);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    } else {
       cipher = Cipher.getInstance(ALGO_AES);
       RSAKeygen keygen = new RSAKeygen(context);
-
       cipher.init(Cipher.ENCRYPT_MODE, keygen.getSecretKey());
     }
     return cipher;
@@ -557,7 +551,6 @@ public class CryptUtil {
 
     private Context context;
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     RSAKeygen(Context context) {
 
       this.context = context;
@@ -571,7 +564,6 @@ public class CryptUtil {
     }
 
     /** Generates a RSA public/private key pair to encrypt AES key */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void generateKeyPair(Context context) throws GeneralSecurityException, IOException {
 
       KeyStore keyStore = KeyStore.getInstance(KEY_STORE_ANDROID);
@@ -637,7 +629,6 @@ public class CryptUtil {
     }
 
     /** Decodes encrypted AES key from preference and decrypts using RSA private key */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private Key getSecretKey() throws GeneralSecurityException, IOException {
 
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
