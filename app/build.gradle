@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         applicationId "com.amaze.filemanager"
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 107
         versionName "3.6.7"
