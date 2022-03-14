@@ -73,6 +73,7 @@ public class DecryptService extends AbstractProgressiveService {
   private long totalSize = 0l;
   private String decryptPath;
   private HybridFileParcelable baseFile;
+  private String password;
   private ArrayList<HybridFile> failedOps = new ArrayList<>();
   private int accentColor;
   private SharedPreferences sharedPreferences;
@@ -90,6 +91,7 @@ public class DecryptService extends AbstractProgressiveService {
   public int onStartCommand(Intent intent, int flags, int startId) {
 
     baseFile = intent.getParcelableExtra(TAG_SOURCE);
+    password = intent.getStringExtra("password");
 
     sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     accentColor =
@@ -176,7 +178,7 @@ public class DecryptService extends AbstractProgressiveService {
         // the path is to the same directory as in encrypted one in normal case
         // and the cache directory in case we're here because of the viewer
         try {
-          new CryptUtil(context, baseFile, decryptPath, progressHandler, failedOps);
+          new CryptUtil(context, baseFile, decryptPath, progressHandler, failedOps, password);
         } catch (Exception e) {
           e.printStackTrace();
           failedOps.add(baseFile);
