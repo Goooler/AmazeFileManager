@@ -226,11 +226,7 @@ public class CryptUtil {
           new BufferedOutputStream(
               targetFile.getOutputStream(context), GenericCopyUtil.DEFAULT_BUFFER_SIZE);
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        aesDecrypt(inputStream, outputStream);
-      } else {
-        rsaDecrypt(context, inputStream, outputStream);
-      }
+      StreamCrypt.INSTANCE.decrypt(password, inputStream, outputStream);
     }
   }
 
@@ -294,7 +290,7 @@ public class CryptUtil {
           new BufferedOutputStream(
               targetFile.getOutputStream(context), GenericCopyUtil.DEFAULT_BUFFER_SIZE);
 
-      StreamCrypt.INSTANCE.encrypt(null, inputStream, outputStream);
+      StreamCrypt.INSTANCE.encrypt(password, inputStream, outputStream);
     }
   }
 
@@ -325,41 +321,6 @@ public class CryptUtil {
   }
 
   /**
-   * Helper method to decrypt file
-   *
-   * @param inputStream stream associated with encrypted file
-   * @param outputStream stream associated with new output decrypted file
-   */
-  @RequiresApi(api = Build.VERSION_CODES.M)
-  private void aesDecrypt(BufferedInputStream inputStream, BufferedOutputStream outputStream)
-      throws GeneralSecurityException, IOException {
-
-    Cipher cipher = Cipher.getInstance(ALGO_AES);
-    GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, IV.getBytes());
-
-    cipher.init(Cipher.DECRYPT_MODE, getSecretKey(), gcmParameterSpec);
-    CipherInputStream cipherInputStream = new CipherInputStream(inputStream, cipher);
-
-    byte[] buffer = new byte[GenericCopyUtil.DEFAULT_BUFFER_SIZE];
-    int count;
-
-    try {
-
-      while ((count = cipherInputStream.read(buffer)) != -1) {
-        if (!progressHandler.getCancelled()) {
-          outputStream.write(buffer, 0, count);
-          ServiceWatcherUtil.position += count;
-        } else break;
-      }
-    } finally {
-
-      outputStream.flush();
-      cipherInputStream.close();
-      outputStream.close();
-    }
-  }
-
-  /**
    * Gets a secret key from Android key store. If no key has been generated with a given alias then
    * generate a new one
    */
@@ -384,36 +345,6 @@ public class CryptUtil {
       return keyGenerator.generateKey();
     } else {
       return keyStore.getKey(KEY_ALIAS_AMAZE, null);
-    }
-  }
-
-  private void rsaDecrypt(
-      Context context, BufferedInputStream inputStream, BufferedOutputStream outputStream)
-      throws GeneralSecurityException, IOException {
-
-    Cipher cipher = Cipher.getInstance(ALGO_AES);
-    RSAKeygen keygen = new RSAKeygen(context);
-
-    IvParameterSpec ivParameterSpec = new IvParameterSpec(IV.getBytes());
-    cipher.init(Cipher.DECRYPT_MODE, keygen.getSecretKey(), ivParameterSpec);
-    CipherInputStream cipherInputStream = new CipherInputStream(inputStream, cipher);
-
-    byte[] buffer = new byte[GenericCopyUtil.DEFAULT_BUFFER_SIZE];
-    int count;
-
-    try {
-
-      while ((count = cipherInputStream.read(buffer)) != -1) {
-        if (!progressHandler.getCancelled()) {
-          outputStream.write(buffer, 0, count);
-          ServiceWatcherUtil.position += count;
-        } else break;
-      }
-    } finally {
-
-      outputStream.flush();
-      outputStream.close();
-      cipherInputStream.close();
     }
   }
 
