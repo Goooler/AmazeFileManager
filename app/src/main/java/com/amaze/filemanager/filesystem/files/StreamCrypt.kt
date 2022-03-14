@@ -27,9 +27,7 @@ object StreamCrypt {
         password: String, inputStream: BufferedInputStream, outputStream: BufferedOutputStream
     ) {
         val passwd = (password + placeholder).toByteArray()
-        val header = ByteArray(passwd.size).also {
-            inputStream.read(it)
-        }.joinToString()
+        val header = ByteArray(passwd.size).also(inputStream::read).joinToString()
         check(passwd.joinToString() == header) {
             "password wrong"
         }
